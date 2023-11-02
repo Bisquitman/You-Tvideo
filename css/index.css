@@ -683,6 +683,9 @@ iframe {
           hyphens: auto;
   overflow-wrap: break-word;
 }
+.video__description a {
+  color: chocolate;
+}
 
 .video-list {
   padding: 80px 0;

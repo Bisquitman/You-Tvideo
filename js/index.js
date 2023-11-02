@@ -81,6 +81,13 @@ const formatDate = (isoDate) => {
   return formatter.format(date);
 };
 
+const replaceURLs = (message) => {
+  if (!message) return;
+
+    const exp = /(\b(http|https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
+    return message.replaceAll(exp, "<a href='$1' target='_blank' rel='noopener noreferrer'>$1</a>");
+};
+
 const fetchTrendingVideos = async () => {
   try {
     const url = new URL(VIDEOS_URL);
@@ -115,7 +122,6 @@ const fetchFavoriteVideos = async () => {
     url.searchParams.append('key', API_KEY);
 
     const response = await fetch(url);
-    // console.log('response: ', await response.json());
 
     if (!response.ok) {
       throw new Error(`HTTP error ${response.status}`);
@@ -185,7 +191,6 @@ const createListVideo = (videos, titleText, pagination) => {
   videoListItems.className = 'video-list__items';
 
   const listVideos = videos.items.map((video) => {
-    // console.log('video id: ', video.id);
     const id = video.id.videoId || video.id;
     const li = document.createElement('li');
     li.className = 'video-list__item';
@@ -224,9 +229,6 @@ const createListVideo = (videos, titleText, pagination) => {
   videoListSection.append(container);
 
   if (pagination) {
-    // console.log('pagination: ', pagination);
-    // todo Pagination
-
     const paginationElem = document.createElement('div');
     paginationElem.className = 'pagination';
 
@@ -261,7 +263,6 @@ const createListVideo = (videos, titleText, pagination) => {
 };
 
 const createVideo = (video) => {
-  // console.log('video: ', video);
   const videoSection = document.createElement('section');
   videoSection.className = 'video';
   videoSection.innerHTML = `
@@ -293,7 +294,7 @@ const createVideo = (video) => {
           <span class="video__views">${parseInt(video.statistics.viewCount).toLocaleString()} ${declOfNumWordOnly(parseInt(video.statistics.viewCount), ['просмотр', 'просмотра', 'просмотров'])}</span> | 
           <span class="video__date">Дата премьеры: ${formatDate(video.snippet.publishedAt)}</span>
         </p>
-        <p class="video__description">${video.snippet.description.replaceAll('\n', '<br />')}</p>
+        <p class="video__description">${replaceURLs(video.snippet.description.replaceAll('\n', '<br />'))}</p>
       </div>
     </div>
   `;
@@ -394,7 +395,7 @@ const indexRoute = async () => {
   // if (header) {
   //   header.remove();
   // }
-  
+
   // Короткий вариант:
   document.querySelector('.header')?.remove();
 
